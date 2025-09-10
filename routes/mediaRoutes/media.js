@@ -5,7 +5,7 @@ const Episode = require("../../models/Episode");
 
 exports.getAllMedia = async (req, res) => {
   try {
-    const allMovies = await Media.findAll({
+    const allMedia = await Media.findAll({
       include: [
         {
           model: Episode,
@@ -19,29 +19,33 @@ exports.getAllMedia = async (req, res) => {
           order: [["episode_number", "ASC"]],
         },
       ],
+      order: [["title", "ASC"]],
     });
 
-    // Group movies by language
+    // Group media by language (handling multiple languages per media)
     const sectionsMap = {};
-    allMovies.forEach((movie) => {
-      const lang = movie.language || "Unknown";
-      if (!sectionsMap[lang]) sectionsMap[lang] = [];
-      sectionsMap[lang].push({
-        title: movie.title,
-        image: movie.image,
-        year: movie.year,
-        rating: movie.rating,
-        episodes: (movie.Episodes || []).map((ep) => ({
-          ...ep.dataValues,
-          video: ep.video_url,
-        })),
+
+    allMedia.forEach((media) => {
+      // media.languages is an array, so group the media under each language
+      const languages = media.languages.length ? media.languages : ["Unknown"];
+      languages.forEach((lang) => {
+        if (!sectionsMap[lang]) sectionsMap[lang] = [];
+
+        sectionsMap[lang].push({
+          title: media.title,
+          image: media.image_url,
+          episodes: (media.Episodes || []).map((ep) => ({
+            ...ep.dataValues,
+            video: ep.video_url,
+          })),
+        });
       });
     });
 
     // Convert to array format expected by frontend
-    const sections = Object.entries(sectionsMap).map(([title, movies]) => ({
-      title,
-      movies,
+    const sections = Object.entries(sectionsMap).map(([language, mediaArray]) => ({
+      title: language,
+      movies: mediaArray,
     }));
 
     res.json(sections);
@@ -50,6 +54,7 @@ exports.getAllMedia = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
 
 exports.getSingleMedia = async (req, res) => {
   try {
