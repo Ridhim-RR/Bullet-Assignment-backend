@@ -1,17 +1,21 @@
-// file: controllers/auth.js
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 
+// Registration API
 exports.registerUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   try {
-    let user = await User.findOne({ where: { username } });
+    // Check uniqueness of email or username
+    let user = await User.findOne({ where: { [User.sequelize.Op.or]: [{ email }, { username }] } });
     if (user) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(400).json({ msg: "User with this email or username already exists" });
     }
 
-    user = await User.create({ username, password });
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user = await User.create({ username, email, password: hashedPassword });
 
     const payload = { user: { id: user.id } };
     jwt.sign(
@@ -29,10 +33,12 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+// Login API
 exports.loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ where: { username } });
+    // Find by email (or allow login by username if needed)
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }

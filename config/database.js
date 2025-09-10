@@ -1,7 +1,7 @@
 // file: config/database.js
 
 const { Sequelize } = require('sequelize');
-console.log(process.env.DATABASE_URL,"UURRLRLRLRLRL")
+// console.log(process.env.DATABASE_URL,"UURRLRLRLRLRL")
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
