@@ -58,7 +58,6 @@ exports.loginUser = async (req, res) => {
 
     //   return res.status(400).json({ msg: "Invalid credentials" });
     // }
-      console.log("isMatch",  isMatch)
 
     const payload = { user: { id: user.id } };
     jwt.sign(
