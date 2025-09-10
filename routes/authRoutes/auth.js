@@ -40,6 +40,10 @@ exports.registerUser = async (req, res) => {
 // Login API
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
+      console.log(email," +++++++++++ ", password);
+
+      const data = await User.findAll();
+    console.log(data,"+++++++++++");
   try {
     // Find by email (or allow login by username if needed)
     const user = await User.findOne({ where: { email } });
