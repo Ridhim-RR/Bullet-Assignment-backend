@@ -41,20 +41,22 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
       console.log(email," +++++++++++ ", password);
-
-      const data = await User.findAll();
-    console.log(data,"+++++++++++");
   try {
     // Find by email (or allow login by username if needed)
     const user = await User.findOne({ where: { email } });
     if (!user) {
+      console.log("No user")
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+      console.log("user ", user)
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+            console.log("No match")
+
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+      console.log("isMatch",  isMatch)
 
     const payload = { user: { id: user.id } };
     jwt.sign(
