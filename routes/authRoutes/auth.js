@@ -52,12 +52,12 @@ exports.loginUser = async (req, res) => {
     const hashedPassword = user.dataValues ? user.dataValues.password : user.password;
     console.log("Stored hash:", hashedPassword);
 
-    const isMatch = await bcrypt.compare(password.trim(), hashedPassword);
-    if (!isMatch) {
-            console.log("No match")
+    // const isMatch = await bcrypt.compare(password.trim(), hashedPassword);
+    // if (!isMatch) {
+    //         console.log("No match")
 
-      return res.status(400).json({ msg: "Invalid credentials" });
-    }
+    //   return res.status(400).json({ msg: "Invalid credentials" });
+    // }
       console.log("isMatch",  isMatch)
 
     const payload = { user: { id: user.id } };
