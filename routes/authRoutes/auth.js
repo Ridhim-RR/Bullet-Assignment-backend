@@ -9,7 +9,7 @@ exports.registerUser = async (req, res) => {
   const { username, email, password } = req.body;
   try {
     // Check uniqueness of email or username
-    let user = await User.findOne({ where: { [User.sequelize.Op.or]: [{ email }, { username }] } });
+    let user = await User.findOne({ where: { email } });
     if (user) {
       return res.status(400).json({ msg: "User with this email or username already exists" });
     }
