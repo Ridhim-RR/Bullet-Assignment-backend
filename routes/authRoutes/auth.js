@@ -9,6 +9,8 @@ exports.registerUser = async (req, res) => {
   const { username, email, password } = req.body;
   try {
     // Check uniqueness of email or username
+    const data = await User.findAll();
+    console.log(data,"+++++++++++");
     let user = await User.findOne({ where: { email } });
     if (user) {
       return res.status(400).json({ msg: "User with this email or username already exists" });
